@@ -27,7 +27,7 @@ use Faker\Generator as Faker;
 
 $factory->define(\App\Movie::class, function (Faker $faker) {
     return [
-        'title' => $faker->title,
+        'title' => $faker->name,
         'director' => $faker->name,
         'imageUrl' => $faker->url,
         'duration' => $faker->numberBetween(0, 200),
