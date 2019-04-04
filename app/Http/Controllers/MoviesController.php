@@ -14,10 +14,18 @@ class MoviesController extends Controller
      */
     public function index(Request $request)
     {
-        $title = $request->title;
         if (!empty($request->get('title')))
         {
+            $title = $request->title;
+            if (!empty($request->get('take') && !empty($request->get('skip'))))
+            {
+                return Movie::where('title', 'LIKE', '%'.$title.'%')->skip($request->skip)->take($request->take)->get();
+            }
             return Movie::where('title', 'LIKE', '%'.$title.'%')->get();
+        }
+        if (!empty($request->get('take') && !empty($request->get('skip'))))
+        {
+            return Movie::skip($request->skip)->take($request->take)->get();
         }
         return Movie::all();
     }
