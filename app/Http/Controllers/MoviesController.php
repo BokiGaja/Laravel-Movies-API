@@ -25,7 +25,14 @@ class MoviesController extends Controller
      */
     public function store(Request $request)
     {
-        $newMovie = new Movie($request->all());
+        $newMovie = new Movie($request->validate([
+            'title' => 'required|unique:movies,title',
+            'genre' => 'string',
+            'director' => 'required',
+            'duration' => 'required|min:1|max:500',
+            'releaseDate' => 'required|unique:movies,releaseDate',
+            'imageUrl' => 'url'
+        ]));
         if ($newMovie->save())
         {
             return $newMovie;
