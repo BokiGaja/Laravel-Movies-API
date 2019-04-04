@@ -14,17 +14,7 @@ class MoviesController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return Movie::all();
     }
 
     /**
@@ -35,7 +25,12 @@ class MoviesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $newMovie = new Movie($request->all());
+        if ($newMovie->save())
+        {
+            return $newMovie;
+        }
+        return null;
     }
 
     /**
@@ -46,18 +41,7 @@ class MoviesController extends Controller
      */
     public function show(Movie $movie)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Movie  $movie
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Movie $movie)
-    {
-        //
+        return $movie;
     }
 
     /**
@@ -69,7 +53,8 @@ class MoviesController extends Controller
      */
     public function update(Request $request, Movie $movie)
     {
-        //
+        $movie->update($request->all());
+        return $movie;
     }
 
     /**
@@ -80,6 +65,10 @@ class MoviesController extends Controller
      */
     public function destroy(Movie $movie)
     {
-        //
+        if ($movie->delete())
+        {
+            return 'Movie with id: '.$movie->id.' has been deleted.';
+        };
+        return null;
     }
 }
