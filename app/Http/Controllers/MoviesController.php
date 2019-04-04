@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\MoviesService;
+use App\Http\Services\ValidationService;
 use App\Movie;
 use Illuminate\Http\Request;
 
@@ -16,23 +18,15 @@ class MoviesController extends Controller
     {
         if (!empty($request->get('title')))
         {
-            $title = $request->title;
             if (!empty($request->get('take') && !empty($request->get('skip'))))
             {
-                $filteredMovies =  Movie::where('title', 'LIKE', '%'.$title.'%')->skip($request->skip)->take($request->take)->get();
-                if (count($filteredMovies) > 0)
-                {
-                    return $filteredMovies;
-                }
-                else {
-                    return Movie::all();
-                }
+                return MoviesService::searchAndPaginate($request);
             }
-            return Movie::where('title', 'LIKE', '%'.$title.'%')->get();
+            return MoviesService::searchMovieTitle($request);
         }
         if (!empty($request->get('take') && !empty($request->get('skip'))))
         {
-            return Movie::skip($request->skip)->take($request->take)->get();
+            return MoviesService::paginate($request);
         }
         return Movie::all();
     }
@@ -45,14 +39,7 @@ class MoviesController extends Controller
      */
     public function store(Request $request)
     {
-        $newMovie = new Movie($request->validate([
-            'title' => 'required|unique:movies,title',
-            'genre' => 'string',
-            'director' => 'required',
-            'duration' => 'required|min:1|max:500',
-            'releaseDate' => 'required|unique:movies,releaseDate',
-            'imageUrl' => 'url'
-        ]));
+        $newMovie = ValidationService::validateMovie($request);
         if ($newMovie->save())
         {
             return $newMovie;
