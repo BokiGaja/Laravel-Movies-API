@@ -19,7 +19,14 @@ class MoviesController extends Controller
             $title = $request->title;
             if (!empty($request->get('take') && !empty($request->get('skip'))))
             {
-                return Movie::where('title', 'LIKE', '%'.$title.'%')->skip($request->skip)->take($request->take)->get();
+                $filteredMovies =  Movie::where('title', 'LIKE', '%'.$title.'%')->skip($request->skip)->take($request->take)->get();
+                if (count($filteredMovies) > 0)
+                {
+                    return $filteredMovies;
+                }
+                else {
+                    return Movie::all();
+                }
             }
             return Movie::where('title', 'LIKE', '%'.$title.'%')->get();
         }
