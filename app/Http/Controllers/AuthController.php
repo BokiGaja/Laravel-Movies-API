@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\ValidationService;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -19,17 +20,17 @@ class AuthController extends Controller
 
     public function register(Request$request)
     {
-        $this->validate($request,[
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:6'
-        ]);
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = bcrypt($request->password);
-        $user->save();
-        return response()->json(['user' => $user]);
+        $validator = ValidationService::validateUser($request);
+        if (!is_string($validator))
+        {
+            $newUser = new User();
+            $newUser->name = $request->name;
+            $newUser->password = bcrypt($request->password);
+            $newUser->email = $request->email;
+            $newUser->save();
+        } else {
+            return response()->json(['error' => $validator]);
+        }
     }
 
     public function login(Request $request)
@@ -49,7 +50,7 @@ class AuthController extends Controller
     public function logout()
     {
         auth('api')->logout();
-        return response()->json(['message' => 'Successfully logged out']);
+        return "Successfully logged out";
     }
 
     public function refresh()

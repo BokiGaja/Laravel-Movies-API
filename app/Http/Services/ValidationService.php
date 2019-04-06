@@ -27,4 +27,21 @@ class ValidationService
             return true;
         }
     }
+
+    public static function validateUser($userData)
+    {
+        $rules = [
+            'name' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:6'
+        ];
+        $validator = Validator::make($userData->all(), $rules);
+
+        if ($validator->fails())
+        {
+            return $validator->errors()->first();
+        } else {
+            return true;
+        }
+    }
 }
