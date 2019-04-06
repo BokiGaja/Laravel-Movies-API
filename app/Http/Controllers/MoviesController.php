@@ -39,12 +39,14 @@ class MoviesController extends Controller
      */
     public function store(Request $request)
     {
-        $newMovie = ValidationService::validateMovie($request);
-        if ($newMovie->save())
+        $validator = ValidationService::validateMovie($request);
+        if (!is_string($validator))
         {
-            return $newMovie;
+            $newMovie = new Movie($request->all());
+            $newMovie->save();
+        } else {
+            return $validator;
         }
-        return null;
     }
 
     /**
@@ -67,15 +69,14 @@ class MoviesController extends Controller
      */
     public function update(Request $request, Movie $movie)
     {
-        $movie->update($request->validate([
-            'title' => 'required|unique:movies,title',
-            'genre' => 'string',
-            'director' => 'required',
-            'duration' => 'required|min:1|max:200',
-            'releaseDate' => 'required|unique:movies,releaseDate',
-            'imageUrl' => 'url'
-        ]));
-        return $movie;
+        $validator = ValidationService::validateMovie($request);
+        if (!is_string($validator))
+        {
+            $movie->update($request->all());
+            return "Movie successfully updated";
+        } else {
+            return $validator;
+        }
     }
 
     /**
